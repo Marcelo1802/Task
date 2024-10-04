@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.task.databinding.FragmentViewPagerTaskBinding
 import com.example.task.model.TaskModel
 import com.example.task.model.TaskViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class ViewPagerTaskFragment : Fragment() {
@@ -18,7 +19,7 @@ class ViewPagerTaskFragment : Fragment() {
     private var _binding: FragmentViewPagerTaskBinding? = null
     private val binding get() = _binding!!
 
-    private val taskViewModel: TaskViewModel by activityViewModels() // Acessa o ViewModel compartilhado
+    private val viewModel: TaskViewModel by viewModel()
 
     private lateinit var taskAdapter: TaskAdapter
 
@@ -33,18 +34,22 @@ class ViewPagerTaskFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupRecyclerView()
 
-        // Observa mudanças na lista de tarefas
-        taskViewModel.tasks.observe(viewLifecycleOwner) { tasks ->
+        // Inicialize o taskAdapter
+        taskAdapter = TaskAdapter(mutableListOf()) { task ->
+            // Callback para deletar a tarefa
+            // Você pode chamar o ViewModel ou realizar outra ação aqui
+            viewModel.deleteTask(task.id)
+        }
+
+        binding.recyclerView.adapter = taskAdapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+
+        // Observa a lista de tarefas
+        viewModel.tasks.observe(viewLifecycleOwner) { tasks ->
             taskAdapter.updateTaskList(tasks)
         }
-    }
-
-    private fun setupRecyclerView() {
-        taskAdapter = TaskAdapter(mutableListOf())
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        binding.recyclerView.adapter = taskAdapter
     }
 
     override fun onDestroyView() {

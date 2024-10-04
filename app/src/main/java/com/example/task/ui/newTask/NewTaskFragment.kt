@@ -11,18 +11,15 @@ import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import com.example.task.R
 import com.example.task.model.TaskModel
 import com.example.task.model.TaskViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.UUID
 
 class NewTaskFragment : Fragment() {
 
-    private val taskViewModel: TaskViewModel by activityViewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private val viewModel: TaskViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,20 +32,19 @@ class NewTaskFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val spinner: Spinner = view.findViewById(R.id.priority_spinner)
+        val titleEditText: EditText = view.findViewById(R.id.valor_inicialEditText)
+        val descriptionEditText: EditText = view.findViewById(R.id.description)
+
+        // Definir um adapter de Spinner que muda a cor com base na prioridade
         val priorities = arrayOf("Baixa", "Média", "Alta")
 
-        // Criando o ArrayAdapter com o layout customizado
         val spinnerAdapter = object : ArrayAdapter<String>(requireContext(), R.layout.spinner_item, priorities) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = super.getView(position, convertView, parent)
                 val textView = view as TextView
 
-                // Aplicar cores customizadas para cada nível de prioridade
-                when (position) {
-                    0 -> textView.setTextColor(Color.GREEN)   // Baixa
-                    1 -> textView.setTextColor(Color.YELLOW)  // Média
-                    2 -> textView.setTextColor(Color.RED)     // Alta
-                }
+                // Aplicar cor baseada na prioridade
+                textView.setTextColor(getPriorityColor(priorities[position]))
 
                 return view
             }
@@ -57,12 +53,8 @@ class NewTaskFragment : Fragment() {
                 val view = super.getDropDownView(position, convertView, parent)
                 val textView = view as TextView
 
-                // Aplicar cores customizadas para o dropdown
-                when (position) {
-                    0 -> textView.setTextColor(Color.GREEN)   // Baixa
-                    1 -> textView.setTextColor(Color.YELLOW)  // Média
-                    2 -> textView.setTextColor(Color.RED)     // Alta
-                }
+                // Aplicar cor no dropdown também
+                textView.setTextColor(getPriorityColor(priorities[position]))
 
                 return view
             }
@@ -70,24 +62,34 @@ class NewTaskFragment : Fragment() {
 
         spinner.adapter = spinnerAdapter
 
-        val titleEditText: EditText = view.findViewById(R.id.valor_inicialEditText)
-        val descriptionEditText: EditText = view.findViewById(R.id.description)
-        val saveButton: Button = view.findViewById(R.id.button)
-
-        saveButton.setOnClickListener {
-            val priority = spinner.selectedItem.toString()
+        val addButton: View = view.findViewById(R.id.button)
+        addButton.setOnClickListener {
             val title = titleEditText.text.toString()
             val description = descriptionEditText.text.toString()
+            val priority = spinner.selectedItem.toString()
 
+            // Criação do TaskModel com a prioridade selecionada
             val newTask = TaskModel(
-                id = 0,
-                priority = priority,
+                id = UUID.randomUUID().toString(),
                 title = title,
                 description = description,
+                priority = priority,
                 status = false
             )
 
-            taskViewModel.addTask(newTask)
+            // Salvar a tarefa no banco de dados via ViewModel
+            viewModel.saveTask(newTask)
+        }
+    }
+
+    // Função que retorna a cor com base na prioridade
+    private fun getPriorityColor(priority: String): Int {
+        return when (priority) {
+            "Baixa" -> Color.GREEN
+            "Média" -> Color.YELLOW
+            "Alta" -> Color.RED
+            else -> Color.BLACK // Cor padrão
         }
     }
 }
+

@@ -1,5 +1,6 @@
 package com.example.task.ui.task
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,13 +11,40 @@ import com.example.task.R
 import com.example.task.model.TaskModel
 
 
-class TaskAdapter(private var taskList: MutableList<TaskModel>) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
+class TaskAdapter(
+    private var taskList: MutableList<TaskModel>,
+    private val onDeleteClick: (TaskModel) -> Unit
+) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
+
+
+    // Função para mapear prioridades para cores
+    private fun getPriorityColor(priority: String): Int {
+        return when (priority) {
+            "Média" -> Color.YELLOW
+            "Alta" -> Color.RED
+            else -> Color.GREEN
+        }
+    }
 
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val txtTitle: TextView = itemView.findViewById(R.id.title)
         val description: TextView = itemView.findViewById(R.id.descricao)
-        val priority: ImageView = itemView.findViewById(R.id.img_priority)
-        val viewPriority: View = itemView.findViewById(R.id.view_priority)
+        val deleteButton: ImageView = itemView.findViewById(R.id.delete)
+        val priority: View = itemView.findViewById(R.id.view_priority)
+        val imgPriority: ImageView = itemView.findViewById(R.id.img_priority)
+
+        fun bind(task: TaskModel) {
+            txtTitle.text = task.title
+            description.text = task.description
+
+            // Alterar a cor do TextView de prioridade
+            priority.setBackgroundColor(getPriorityColor(task.priority))
+            imgPriority.setColorFilter(getPriorityColor(task.priority))
+
+            deleteButton.setOnClickListener {
+                onDeleteClick(task)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
@@ -26,35 +54,14 @@ class TaskAdapter(private var taskList: MutableList<TaskModel>) : RecyclerView.A
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = taskList[position]
-        holder.txtTitle.text = task.title
-        holder.description.text = task.description
-
-        val priorityColor = when (task.priority.lowercase()) {
-            "baixa" -> R.color.green
-            "média" -> R.color.yellow
-            else -> R.color.red
-        }
-        holder.priority.setColorFilter(holder.itemView.context.getColor(priorityColor), android.graphics.PorterDuff.Mode.SRC_IN)
-
-        // Aplica a cor à `priority` e `viewPriority`
-        holder.priority.setColorFilter(
-            holder.itemView.context.getColor(priorityColor),
-            android.graphics.PorterDuff.Mode.SRC_IN
-        )
-
-        // Mudando a cor da view `viewPriority` conforme a prioridade
-        holder.viewPriority.setBackgroundColor(holder.itemView.context.getColor(priorityColor))
-
+        holder.bind(task)
     }
 
-    override fun getItemCount(): Int {
-        return taskList.size
-    }
+    override fun getItemCount(): Int = taskList.size
 
-    // Função para atualizar a lista de tarefas
-    fun updateTaskList(newTaskList: List<TaskModel>) {
+    fun updateTaskList(newTasks: List<TaskModel>) {
         taskList.clear()
-        taskList.addAll(newTaskList)
+        taskList.addAll(newTasks)
         notifyDataSetChanged()
     }
 }

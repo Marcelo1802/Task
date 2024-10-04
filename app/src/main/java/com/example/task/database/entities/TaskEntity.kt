@@ -1,9 +1,12 @@
-package com.example.task.model
+package com.example.task.database.entities
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.util.UUID
 
-
-data class TaskModel(
+@Entity
+data class TaskEntity(
+    @PrimaryKey
     val id: String = UUID.randomUUID().toString(),
     val title: String,
     val description: String,
