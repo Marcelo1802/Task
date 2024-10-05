@@ -1,7 +1,9 @@
-package com.example.task.ui.task
+package com.example.task.ui.task.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.example.task.ui.task.ViewPager.ViewPagerCheckFragment
+import com.example.task.ui.task.ViewPager.ViewPagerTaskFragment
 
 class ViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
     override fun getItemCount(): Int {
@@ -13,7 +15,7 @@ class ViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
         return when (position) {
             0 -> ViewPagerTaskFragment()
-            else -> CheckFragment()
+            else -> ViewPagerCheckFragment()
         }
     }
 }

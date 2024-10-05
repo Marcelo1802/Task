@@ -44,4 +44,12 @@ class TaskViewModel(private val repository: TasksRepository) : ViewModel() {
             .map { it?.toTaskModel() }
             .asLiveData()
     }
+
+    fun editTask(updatedTask: TaskModel) {
+        viewModelScope.launch {
+            repository.updateTask(updatedTask)
+        }
+    }
+
+
 }

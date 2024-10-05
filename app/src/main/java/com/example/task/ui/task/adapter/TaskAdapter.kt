@@ -1,4 +1,4 @@
-package com.example.task.ui.task
+package com.example.task.ui.task.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -13,7 +13,8 @@ import com.example.task.model.TaskModel
 
 class TaskAdapter(
     private var taskList: MutableList<TaskModel>,
-    private val onDeleteClick: (TaskModel) -> Unit
+    private val onDeleteClick: (TaskModel) -> Unit,
+    private val onEditTaskClick: (TaskModel) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
 
@@ -32,6 +33,7 @@ class TaskAdapter(
         val deleteButton: ImageView = itemView.findViewById(R.id.delete)
         val priority: View = itemView.findViewById(R.id.view_priority)
         val imgPriority: ImageView = itemView.findViewById(R.id.img_priority)
+        val editTask: ImageView = itemView.findViewById(R.id.edit)
 
         fun bind(task: TaskModel) {
             txtTitle.text = task.title
@@ -43,6 +45,11 @@ class TaskAdapter(
 
             deleteButton.setOnClickListener {
                 onDeleteClick(task)
+            }
+
+            editTask.setOnClickListener {
+                onEditTaskClick(task)
+
             }
         }
     }

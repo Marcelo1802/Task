@@ -30,6 +30,15 @@ class TasksRepository(
 
     fun findById(id: String) = dao.findById(id)
 
+    suspend fun editTask(task: TaskModel) = withContext(IO) {
+        dao.save(task.toTaskEntity())
+    }
+
+    suspend fun updateTask(task: TaskModel) {
+        dao.update(task.toTaskEntity())
+    }
+
+
 }
 
 fun TaskModel.toTaskEntity() = TaskEntity(

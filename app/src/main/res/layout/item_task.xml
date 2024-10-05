@@ -28,9 +28,18 @@
             android:id="@+id/delete"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_margin="4dp"
-            android:buttonTint="@color/red"
-            app:layout_constraintStart_toStartOf="parent"
+            android:src="@drawable/delete_svgrepo_com"
+            app:layout_constraintBottom_toTopOf="@+id/view_priority"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+
+        <ImageView
+            android:id="@+id/edit"
+            android:layout_width="30dp"
+            android:layout_height="25dp"
+            android:src="@drawable/light_config_svgrepo_com"
+            app:layout_constraintBottom_toBottomOf="@+id/img_priority"
+            app:layout_constraintEnd_toStartOf="@+id/img_priority"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -75,7 +84,7 @@
             android:layout_marginTop="20dp"
             android:background="@color/red"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/descricao"/>
+            app:layout_constraintTop_toBottomOf="@id/descricao" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

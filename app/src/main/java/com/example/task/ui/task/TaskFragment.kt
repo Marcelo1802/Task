@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.viewpager2.widget.ViewPager2
 import com.example.task.R
 import com.example.task.databinding.FragmentTaskBinding
+import com.example.task.ui.task.adapter.ViewPagerAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 
 class TaskFragment : Fragment() {

@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.task.R
 import com.example.task.model.TaskModel
 import com.example.task.model.TaskViewModel
@@ -79,6 +80,7 @@ class NewTaskFragment : Fragment() {
 
             // Salvar a tarefa no banco de dados via ViewModel
             viewModel.saveTask(newTask)
+            findNavController().navigate(R.id.action_newTaskFragment_to_taskFragment)
         }
     }
 

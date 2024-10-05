@@ -13,10 +13,36 @@
         <action
             android:id="@+id/action_taskFragment_to_newTaskFragment"
             app:destination="@id/newTaskFragment" />
+        <action
+            android:id="@+id/action_taskFragment_to_editTaskFragment"
+            app:destination="@id/editTaskFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/newTaskFragment"
         android:name="com.example.task.ui.newTask.NewTaskFragment"
         android:label="fragment_new_task"
-        tools:layout="@layout/fragment_new_task" />
+        tools:layout="@layout/fragment_new_task" >
+        <action
+            android:id="@+id/action_newTaskFragment_to_taskFragment"
+            app:destination="@id/taskFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editTaskFragment"
+        android:name="com.example.task.ui.editTask.EditTaskFragment"
+        android:label="fragment_edit_task"
+        tools:layout="@layout/fragment_edit_task">
+
+        <argument
+            android:name="taskId"
+            app:argType="string" />
+        <argument
+            android:name="taskTitle"
+            app:argType="string" />
+        <argument
+            android:name="taskDescription"
+            app:argType="string" />
+    </fragment>
+
 </navigation>

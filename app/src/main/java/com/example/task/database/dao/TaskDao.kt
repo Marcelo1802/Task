@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.task.database.entities.TaskEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -22,5 +23,9 @@ interface TaskDao {
 
     @Delete
     suspend fun delete(task: TaskEntity)
+
+    @Update
+    suspend fun update(task: TaskEntity)
+
 
 }
