@@ -1,6 +1,7 @@
 package com.example.task.model
 
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.task.model.TaskModel
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.time.delay
 
 class TaskViewModel(private val repository: TasksRepository) : ViewModel() {
 
@@ -17,9 +19,21 @@ class TaskViewModel(private val repository: TasksRepository) : ViewModel() {
         .map { entities -> entities.map { it.toTaskModel() } }
         .asLiveData()
 
+
+    val incompleteTasks: LiveData<List<TaskModel>> = repository.incompleteTasks
+        .map { entities -> entities.map { it.toTaskModel() } }
+        .asLiveData()
+
+    val completeTasks: LiveData<List<TaskModel>> = repository.completeTasks
+        .map { entities -> entities.map { it.toTaskModel() } }
+        .asLiveData()
+
+
+
     // Função para salvar uma nova tarefa
     fun saveTask(task: TaskModel) {
         viewModelScope.launch {
+            Log.i("TAG", "bind: ${task.status}")
             repository.save(task)
         }
     }
@@ -34,6 +48,7 @@ class TaskViewModel(private val repository: TasksRepository) : ViewModel() {
     // Função para alternar o status da tarefa (concluído ou não)
     fun toggleTaskStatus(task: TaskModel) {
         viewModelScope.launch {
+            kotlinx.coroutines.delay(5000)
             repository.toggleIsDone(task)
         }
     }

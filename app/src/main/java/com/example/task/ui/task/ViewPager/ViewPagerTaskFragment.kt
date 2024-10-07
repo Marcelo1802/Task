@@ -1,6 +1,7 @@
 package com.example.task.ui.task.ViewPager
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -50,14 +51,19 @@ class ViewPagerTaskFragment : Fragment() {
                     putString("taskPriority", task.priority)
                 }
                 findNavController().navigate(R.id.action_taskFragment_to_editTaskFragment, bundle)
+            },
+            onStatusChange = { task ->
+                // Lógica para mudar o status da tarefa
+                viewModel.toggleTaskStatus(task) // Chame a função no ViewModel para alterar o status
+                Log.i("TAG", "teste: ${task.status}")
             }
         )
 
         binding.recyclerView.adapter = taskAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        // Observa a lista de tarefas
-        viewModel.tasks.observe(viewLifecycleOwner) { tasks ->
+        // Observa a lista de tarefas incompletas
+        viewModel.incompleteTasks.observe(viewLifecycleOwner) { tasks ->
             taskAdapter.updateTaskList(tasks)
         }
     }

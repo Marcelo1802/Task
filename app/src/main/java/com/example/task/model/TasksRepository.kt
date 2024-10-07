@@ -1,6 +1,7 @@
 package com.example.task.model
 
 
+import android.util.Log
 import com.example.task.database.dao.TaskDao
 import com.example.task.database.entities.TaskEntity
 import kotlinx.coroutines.Dispatchers.IO
@@ -9,6 +10,10 @@ import kotlinx.coroutines.withContext
 class TasksRepository(
     private val dao: TaskDao
 ) {
+
+    val incompleteTasks get() = dao.findIncompleteTasks()
+    val completeTasks get() = dao.findcompleteTasks()
+
 
     val tasks get() = dao.findAll()
 
@@ -20,6 +25,7 @@ class TasksRepository(
         val entity = task.copy(status = !task.status)
             .toTaskEntity()
         dao.save(entity)
+
     }
 
     suspend fun delete(id: String) {

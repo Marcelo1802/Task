@@ -12,6 +12,12 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TaskDao {
 
+    @Query("SELECT * FROM TaskEntity WHERE status = 0")
+    fun findIncompleteTasks(): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM TaskEntity WHERE status = 1")
+    fun findcompleteTasks(): Flow<List<TaskEntity>>
+
     @Query("SELECT * FROM TaskEntity")
     fun findAll(): Flow<List<TaskEntity>>
 
