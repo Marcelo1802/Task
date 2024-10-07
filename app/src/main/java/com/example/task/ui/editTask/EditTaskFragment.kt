@@ -6,13 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.Spinner
 import android.widget.TextView
 import com.example.task.R
 import com.example.task.databinding.FragmentEditTaskBinding
 import com.example.task.model.TaskModel
-import com.example.task.model.TaskViewModel
+import com.example.task.viewModel.TaskViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 

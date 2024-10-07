@@ -3,8 +3,8 @@ package com.example.task.di
 import android.net.ConnectivityManager
 import androidx.room.Room
 import com.example.task.database.TaskDatabase
-import com.example.task.model.TaskViewModel
-import com.example.task.model.TasksRepository
+import com.example.task.viewModel.TaskViewModel
+import com.example.task.repository.TasksRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.singleOf

@@ -1,10 +1,11 @@
-package com.example.task.model
+package com.example.task.repository
 
 
-import android.util.Log
 import com.example.task.database.dao.TaskDao
 import com.example.task.database.entities.TaskEntity
+import com.example.task.model.TaskModel
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class TasksRepository(
@@ -20,6 +21,14 @@ class TasksRepository(
     suspend fun save(task: TaskModel) = withContext(IO) {
         dao.save(task.toTaskEntity())
     }
+
+    fun searchIncompleteTasksByTitle(query: String): Flow<List<TaskEntity>> {
+        return dao.searchIncompleteTasksByTitle(query)
+    }
+    fun searchcompleteTasksByTitle(query: String): Flow<List<TaskEntity>> {
+        return dao.searchcompleteTasksByTitle(query)
+    }
+
 
     suspend fun toggleIsDone(task: TaskModel) = withContext(IO) {
         val entity = task.copy(status = !task.status)

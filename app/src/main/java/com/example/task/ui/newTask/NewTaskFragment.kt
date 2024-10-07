@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
@@ -14,7 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.task.R
 import com.example.task.model.TaskModel
-import com.example.task.model.TaskViewModel
+import com.example.task.viewModel.TaskViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.UUID
 

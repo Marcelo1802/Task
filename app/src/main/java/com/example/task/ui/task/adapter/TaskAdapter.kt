@@ -16,7 +16,7 @@ class TaskAdapter(
     private var taskList: MutableList<TaskModel>,
     private val onDeleteClick: (TaskModel) -> Unit,
     private val onEditTaskClick: (TaskModel) -> Unit,
-    private val onStatusChange: (TaskModel) -> Unit // Adiciona um parâmetro para a mudança de status
+    private val onStatusChange: (TaskModel) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     // Função para mapear prioridades para cores
@@ -26,6 +26,22 @@ class TaskAdapter(
             "Alta" -> Color.RED
             else -> Color.GREEN
         }
+    }
+
+    // Função para adicionar quebras de linha a cada 20 caracteres
+    private fun addLineBreaks(text: String, maxCharsPerLine: Int): String {
+        val sb = StringBuilder(text.length)
+        var count = 0
+        for (char in text) {
+            if (count >= maxCharsPerLine && char == ' ') {
+                sb.append('\n')  // Adicionar quebra de linha
+                count = 0        // Reiniciar a contagem
+            } else {
+                sb.append(char)
+                count++
+            }
+        }
+        return sb.toString()
     }
 
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -38,15 +54,28 @@ class TaskAdapter(
         val checkbox: ImageView = itemView.findViewById(R.id.checkBox)
 
         fun bind(task: TaskModel) {
-            txtTitle.text = task.title
-            description.text = task.description
+            // Limita o título a 20 caracteres
+            txtTitle.text = if (task.title.length > 20) task.title.take(20) + "..." else task.title
+
+            // Adiciona quebra de linha a cada 20 caracteres na descrição
+            description.text = addLineBreaks(task.description, 40)
 
             // Alterar a cor do TextView de prioridade
             priority.setBackgroundColor(getPriorityColor(task.priority))
             imgPriority.setColorFilter(getPriorityColor(task.priority))
 
             // Atualiza o estado do checkbox
-            checkbox.setImageResource(if (task.status) R.drawable.check_svgrepo_com else R.drawable.square_svgrepo_com )
+            checkbox.setImageResource(if (task.status) R.drawable.check_svgrepo_com else R.drawable.square_svgrepo_com)
+
+            fun status() {
+                if (task.status) {
+                    editTask.visibility = View.GONE
+                } else {
+                    editTask.visibility = View.VISIBLE
+                }
+            }
+
+            status()
 
             deleteButton.setOnClickListener {
                 onDeleteClick(task)
@@ -54,18 +83,17 @@ class TaskAdapter(
 
             editTask.setOnClickListener {
                 onEditTaskClick(task)
-
             }
 
             checkbox.setOnClickListener {
-                if(!task.status) {
-                    checkbox.setImageResource(R.drawable.check_svgrepo_com)
-                }else {
-                    checkbox.setImageResource(R.drawable.square_svgrepo_com)
-                }
-
                 // Muda o status da tarefa
                 onStatusChange(task)
+
+                if (!task.status) {
+                    checkbox.setImageResource(R.drawable.check_svgrepo_com)
+                } else {
+                    checkbox.setImageResource(R.drawable.square_svgrepo_com)
+                }
             }
         }
     }
@@ -88,3 +116,4 @@ class TaskAdapter(
         notifyDataSetChanged()
     }
 }
+

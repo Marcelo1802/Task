@@ -38,6 +38,7 @@
             android:layout_width="30dp"
             android:layout_height="25dp"
             android:src="@drawable/light_config_svgrepo_com"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/img_priority"
             app:layout_constraintEnd_toStartOf="@+id/img_priority"
             app:layout_constraintTop_toTopOf="parent" />

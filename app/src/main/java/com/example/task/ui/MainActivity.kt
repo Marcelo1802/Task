@@ -1,13 +1,9 @@
-package com.example.task
+package com.example.task.ui
 
 import android.os.Bundle
-import android.view.View
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
+import com.example.task.R
 import com.example.task.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
