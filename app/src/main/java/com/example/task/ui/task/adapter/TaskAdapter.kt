@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.task.R
+import com.example.task.databinding.ItemTaskBinding
 import com.example.task.model.TaskModel
 import kotlinx.coroutines.time.delay
 
@@ -18,6 +19,76 @@ class TaskAdapter(
     private val onEditTaskClick: (TaskModel) -> Unit,
     private val onStatusChange: (TaskModel) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
+
+    inner class TaskViewHolder(private val binding: ItemTaskBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(task: TaskModel) {
+            with(binding) {
+                // Limita o título a 20 caracteres
+                title.text = if (task.title.length > 20) task.title.take(20) + "..." else task.title
+
+                // Adiciona quebra de linha a cada 20 caracteres na descrição
+                descricao.text = addLineBreaks(task.description, 40)
+
+                // Alterar a cor da view de prioridade
+                val priorityColor = getPriorityColor(task.priority)
+                viewPriority.setBackgroundColor(priorityColor)
+                imgPriority.setColorFilter(priorityColor)
+
+                // Atualiza o estado do checkbox
+                checkBox.setImageResource(if (task.status) R.drawable.check_svgrepo_com else R.drawable.square_svgrepo_com)
+
+                // Atualiza a visibilidade do botão de editar com base no status da tarefa
+                updateTaskStatus(task, editTask)
+
+
+                setupClickListeners(task)
+            }
+        }
+
+        private fun setupClickListeners(task: TaskModel) {
+            with(binding){
+
+                deleteButton.setOnClickListener {
+                    onDeleteClick(task)
+                }
+
+                editTask.setOnClickListener {
+                    onEditTaskClick(task)
+                }
+
+                checkBox.setOnClickListener {
+                    // Muda o status da tarefa
+                    onStatusChange(task)
+
+                    // Atualiza o estado do checkbox
+                    checkBox.setImageResource(if (!task.status) {
+                        R.drawable.check_svgrepo_com
+                    } else {
+                        R.drawable.square_svgrepo_com
+                    })
+                }
+            }
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
+        val binding = ItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return TaskViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
+        val task = taskList[position]
+        holder.bind(task)
+    }
+
+    override fun getItemCount(): Int = taskList.size
+
+    fun updateTaskList(newTasks: List<TaskModel>) {
+        taskList.clear()
+        taskList.addAll(newTasks)
+        notifyDataSetChanged()
+    }
 
     // Função para mapear prioridades para cores
     private fun getPriorityColor(priority: String): Int {
@@ -44,76 +115,14 @@ class TaskAdapter(
         return sb.toString()
     }
 
-    inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val txtTitle: TextView = itemView.findViewById(R.id.title)
-        val description: TextView = itemView.findViewById(R.id.descricao)
-        val deleteButton: ImageView = itemView.findViewById(R.id.delete)
-        val priority: View = itemView.findViewById(R.id.view_priority)
-        val imgPriority: ImageView = itemView.findViewById(R.id.img_priority)
-        val editTask: ImageView = itemView.findViewById(R.id.edit)
-        val checkbox: ImageView = itemView.findViewById(R.id.checkBox)
-
-        fun bind(task: TaskModel) {
-            // Limita o título a 20 caracteres
-            txtTitle.text = if (task.title.length > 20) task.title.take(20) + "..." else task.title
-
-            // Adiciona quebra de linha a cada 20 caracteres na descrição
-            description.text = addLineBreaks(task.description, 40)
-
-            // Alterar a cor do TextView de prioridade
-            priority.setBackgroundColor(getPriorityColor(task.priority))
-            imgPriority.setColorFilter(getPriorityColor(task.priority))
-
-            // Atualiza o estado do checkbox
-            checkbox.setImageResource(if (task.status) R.drawable.check_svgrepo_com else R.drawable.square_svgrepo_com)
-
-            fun status() {
-                if (task.status) {
-                    editTask.visibility = View.GONE
-                } else {
-                    editTask.visibility = View.VISIBLE
-                }
-            }
-
-            status()
-
-            deleteButton.setOnClickListener {
-                onDeleteClick(task)
-            }
-
-            editTask.setOnClickListener {
-                onEditTaskClick(task)
-            }
-
-            checkbox.setOnClickListener {
-                // Muda o status da tarefa
-                onStatusChange(task)
-
-                if (!task.status) {
-                    checkbox.setImageResource(R.drawable.check_svgrepo_com)
-                } else {
-                    checkbox.setImageResource(R.drawable.square_svgrepo_com)
-                }
-            }
+    // Função atualizar status
+    private fun updateTaskStatus(task: TaskModel, editTask: View) {
+        if (task.status) {
+            editTask.visibility = View.GONE
+        } else {
+            editTask.visibility = View.VISIBLE
         }
     }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
-        return TaskViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        val task = taskList[position]
-        holder.bind(task)
-    }
-
-    override fun getItemCount(): Int = taskList.size
-
-    fun updateTaskList(newTasks: List<TaskModel>) {
-        taskList.clear()
-        taskList.addAll(newTasks)
-        notifyDataSetChanged()
-    }
 }
+
 

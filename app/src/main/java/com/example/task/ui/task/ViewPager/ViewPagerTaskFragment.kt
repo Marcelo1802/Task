@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.task.R
 import com.example.task.databinding.FragmentViewPagerTaskBinding
+import com.example.task.model.TaskModel
 import com.example.task.viewModel.TaskViewModel
 import com.example.task.repository.toTaskModel
 import com.example.task.ui.task.adapter.TaskAdapter
@@ -28,66 +29,82 @@ class ViewPagerTaskFragment : Fragment() {
 
     private lateinit var taskAdapter: TaskAdapter
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentViewPagerTaskBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView()
+        observeIncompleteTasks()
+        observeSearchResults()
+        setupSearchListener()
+    }
 
-        // Inicialize o taskAdapter
-        taskAdapter = TaskAdapter(mutableListOf(),
+    private fun setupRecyclerView() {
+        taskAdapter = TaskAdapter(
+            taskList = mutableListOf(),
             onDeleteClick = { task ->
-                viewModel.deleteTask(task.id) // Deletar usando o ID
-                binding.editSearch.text?.clear().toString()
+                clearSearchInput()
+                viewModel.deleteTask(task.id)
             },
             onEditTaskClick = { task ->
-                val bundle = Bundle().apply {
-                    putString("taskId", task.id) // Passando o ID da tarefa
-                    putString("taskTitle", task.title)
-                    putString("taskDescription", task.description)
-                    putString("taskPriority", task.priority)
-                }
-                findNavController().navigate(R.id.action_taskFragment_to_editTaskFragment, bundle)
+                navigateToEditTask(task)
             },
             onStatusChange = { task ->
-                viewModel.toggleTaskStatus(task) // Lógica para mudar o status
-                Log.i("TAG", "Status da tarefa alterado: ${task.status}")
+                viewModel.toggleTaskStatus(task)
+
             }
         )
 
-        binding.recyclerView.adapter = taskAdapter
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.apply {
+            adapter = taskAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
+    }
 
-        // Observa a lista de tarefas incompletas
+    private fun observeIncompleteTasks() {
         viewModel.incompleteTasks.observe(viewLifecycleOwner) { tasks ->
             taskAdapter.updateTaskList(tasks)
         }
+    }
 
-        // Coletando o StateFlow de resultados da busca
+    private fun observeSearchResults() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.searchResults.collect { taskEntities ->
-                val taskModels = taskEntities.map { it.toTaskModel() } // Converter TaskEntity para TaskModel
+                val taskModels = taskEntities.map { it.toTaskModel() }
                 taskAdapter.updateTaskList(taskModels)
             }
         }
+    }
 
-
-        // Adicionar um listener para o EditText para atualizar a busca conforme o usuário digita
+    private fun setupSearchListener() {
         binding.editSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Fazer a busca a cada letra digitada
                 viewModel.searchTasks(s.toString())
             }
-
             override fun afterTextChanged(s: Editable?) {}
         })
+    }
+
+    private fun clearSearchInput() {
+        binding.editSearch.text?.clear()
+    }
+
+    private fun navigateToEditTask(task: TaskModel) {
+        val bundle = Bundle().apply {
+            putString("taskId", task.id)
+            putString("taskTitle", task.title)
+            putString("taskDescription", task.description)
+            putString("taskPriority", task.priority)
+        }
+        findNavController().navigate(R.id.action_taskFragment_to_editTaskFragment, bundle)
     }
 
     override fun onDestroyView() {
